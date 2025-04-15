@@ -435,30 +435,6 @@ class BluetoothLe : Plugin() {
     }
 
     @PluginMethod
-    fun getBondedDevices(call: PluginCall) {
-        assertBluetoothAdapter(call) ?: return
-
-        val bluetoothManager = activity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val bluetoothAdapter = bluetoothManager.adapter
-
-        if (bluetoothAdapter == null) {
-            call.reject("Bluetooth is not supported on this device")
-            return
-        }
-
-        val bondedDevices = bluetoothAdapter.bondedDevices
-        val bleDevices = JSArray()
-
-        bondedDevices.forEach { device ->
-            bleDevices.put(getBleDevice(device))
-        }
-
-        val result = JSObject()
-        result.put("devices", bleDevices)
-        call.resolve(result)
-    }
-
-    @PluginMethod
     fun connect(call: PluginCall) {
         val device = getOrCreateDevice(call) ?: return
         val timeout = call.getFloat("timeout", CONNECTION_TIMEOUT)!!.toLong()
@@ -701,8 +677,10 @@ class BluetoothLe : Plugin() {
         ) { response ->
             run {
                 if (response.success) {
+                    Logger.warn(TAG, "write without response success")
                     call.resolve()
                 } else {
+                    Logger.warn(TAG, "write without response error")
                     call.reject(response.value)
                 }
             }
