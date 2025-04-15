@@ -679,7 +679,13 @@ class Device(
     private fun resolve(key: String, value: String) {
         if (callbackMap.containsKey(key)) {
             Logger.debug(TAG, "resolve: $key $value")
-            timeoutQueue.popFirstMatch { it.key == key }?.handler?.removeCallbacksAndMessages(null)
+            val timeout = timeoutQueue.popFirstMatch { it.key == key }
+            if (timeout == null) {
+                Logger.warn(TAG, "RESOLVE: No matching timeout found for key: $key")
+            } else {
+                Logger.warn(TAG, "RESOLVE: removing timer for key: $key")
+                timeout.handler.removeCallbacksAndMessages(null)
+            }
             callbackMap[key]?.invoke(CallbackResponse(true, value))
             callbackMap.remove(key)
         } else {
@@ -690,7 +696,13 @@ class Device(
     private fun reject(key: String, value: String) {
         if (callbackMap.containsKey(key)) {
             Logger.debug(TAG, "reject: $key $value")
-            timeoutQueue.popFirstMatch { it.key == key }?.handler?.removeCallbacksAndMessages(null)
+            val timeout = timeoutQueue.popFirstMatch { it.key == key }
+            if (timeout == null) {
+                Logger.warn(TAG, "REJECT: No matching timeout found for key: $key")
+            } else {
+                Logger.warn(TAG, "REJECT: removing timer for key: $key")
+                timeout.handler.removeCallbacksAndMessages(null)
+            }
             callbackMap[key]?.invoke(CallbackResponse(false, value))
             callbackMap.remove(key)
         } else {
