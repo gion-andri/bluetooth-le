@@ -197,8 +197,10 @@ class Device(
             super.onCharacteristicWrite(gatt, characteristic, status)
             val key = "write|${characteristic.service.uuid}|${characteristic.uuid}"
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                Logger.warn(TAG, "Characteristic written: success. $key")
                 resolve(key, "Characteristic successfully written.")
             } else {
+                Logger.warn(TAG, "Characteristic written: error. $key")
                 reject(key, "Writing characteristic failed.")
             }
 
@@ -513,6 +515,7 @@ class Device(
         timeout: Long,
         callback: (CallbackResponse) -> Unit
     ) {
+        Logger.warn(TAG, "WRITE IS CALLED HERE")
         val key = "write|$serviceUUID|$characteristicUUID"
         callbackMap[key] = callback
         val service = bluetoothGatt?.getService(serviceUUID)
@@ -525,6 +528,7 @@ class Device(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val statusCode = bluetoothGatt?.writeCharacteristic(characteristic, bytes, writeType)
+            Logger.warn(TAG, "TIRAMISU status code: $statusCode")
             if (statusCode != BluetoothStatusCodes.SUCCESS) {
                 reject(key, "Writing characteristic failed with status code $statusCode.")
                 return
@@ -533,6 +537,7 @@ class Device(
             characteristic.value = bytes
             characteristic.writeType = writeType
             val result = bluetoothGatt?.writeCharacteristic(characteristic)
+            Logger.warn(TAG, "NON TIRAMISU RESULT: $result")
             if (result != true) {
                 reject(key, "Writing characteristic failed.")
                 return
@@ -686,6 +691,8 @@ class Device(
             timeoutQueue.popFirstMatch { it.key == key }?.handler?.removeCallbacksAndMessages(null)
             callbackMap[key]?.invoke(CallbackResponse(false, value))
             callbackMap.remove(key)
+        } else {
+            Logger.warn(TAG, "callback map does not contain key: $key")
         }
     }
 
@@ -695,6 +702,7 @@ class Device(
         val handler = Handler(Looper.getMainLooper())
         timeoutQueue.add(TimeoutHandler(key, handler))
         handler.postDelayed({
+            Logger.warn(TAG, "TIMEOUT: $key")
             reject(key, message)
         }, timeout)
     }
