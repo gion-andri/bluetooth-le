@@ -688,6 +688,7 @@ class Device(
             }
             callbackMap[key]?.invoke(CallbackResponse(true, value))
             callbackMap.remove(key)
+            Logger.warn(TAG, "RESOLVE: Removed callback with key: $key")
         } else {
             Logger.warn(TAG, "RESOLVE: callback map does not contain key: $key")
         }
@@ -705,6 +706,7 @@ class Device(
             }
             callbackMap[key]?.invoke(CallbackResponse(false, value))
             callbackMap.remove(key)
+            Logger.warn(TAG, "REJECT: Removed callback with key: $key")
         } else {
             Logger.warn(TAG, "REJECT: callback map does not contain key: $key")
         }
