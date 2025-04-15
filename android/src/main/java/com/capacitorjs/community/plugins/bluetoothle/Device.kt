@@ -682,6 +682,8 @@ class Device(
             timeoutQueue.popFirstMatch { it.key == key }?.handler?.removeCallbacksAndMessages(null)
             callbackMap[key]?.invoke(CallbackResponse(true, value))
             callbackMap.remove(key)
+        } else {
+            Logger.warn(TAG, "RESOLVE: callback map does not contain key: $key")
         }
     }
 
@@ -692,7 +694,7 @@ class Device(
             callbackMap[key]?.invoke(CallbackResponse(false, value))
             callbackMap.remove(key)
         } else {
-            Logger.warn(TAG, "callback map does not contain key: $key")
+            Logger.warn(TAG, "REJECT: callback map does not contain key: $key")
         }
     }
 
