@@ -1,3 +1,5 @@
+import { App } from '@capacitor/app';
+
 /**
  * Convert an array of numbers into a DataView.
  */
@@ -59,16 +61,20 @@ export function hexStringToDataView(hex: string): DataView {
   return numbersToDataView(bin);
 }
 
-export function dataViewToHexString(value: DataView): string {
-  return dataViewToNumbers(value)
+export async function dataViewToHexString(value: DataView): Promise<string> {
+  const info = await App.getInfo();
+  const hexElements: string[] = dataViewToNumbers(value)
     .map((n) => {
       let s = n.toString(16);
       if (s.length == 1) {
         s = '0' + s;
       }
       return s;
-    })
-    .join('');
+    });
+    if (info.version.startsWith('4.3.0') || info.version.startsWith('4.3.1')) {
+      return hexElements.join(' ');
+    }
+    return hexElements.join('');
 }
 
 export function webUUIDToString(uuid: string | number): string {

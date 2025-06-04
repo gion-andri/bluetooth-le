@@ -575,7 +575,7 @@ class BleClientClass implements BleClientInterface {
       let writeValue: DataView | string = value;
       if (Capacitor.getPlatform() !== 'web') {
         // on native we can only write strings
-        writeValue = dataViewToHexString(value);
+        writeValue = await dataViewToHexString(value);
       }
       await BluetoothLe.write({
         deviceId,
@@ -603,7 +603,7 @@ class BleClientClass implements BleClientInterface {
       let writeValue: DataView | string = value;
       if (Capacitor.getPlatform() !== 'web') {
         // on native we can only write strings
-        writeValue = dataViewToHexString(value);
+        writeValue = await dataViewToHexString(value);
       }
       await BluetoothLe.writeWithoutResponse({
         deviceId,
@@ -656,7 +656,7 @@ class BleClientClass implements BleClientInterface {
       let writeValue: DataView | string = value;
       if (Capacitor.getPlatform() !== 'web') {
         // on native we can only write strings
-        writeValue = dataViewToHexString(value);
+        writeValue = await dataViewToHexString(value);
       }
       await BluetoothLe.writeDescriptor({
         deviceId,
